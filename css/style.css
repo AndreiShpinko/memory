@@ -107,7 +107,7 @@ main::before {
   height: 90%;
   border-radius: 10px;
   cursor: pointer;
-  transition: 0.5s;
+  transition: 0.4s;
   position: relative;
   transform-style: preserve-3d;
   box-shadow: 0 4px 6px 1px rgb(0 0 0 / 40%);
@@ -124,6 +124,8 @@ main::before {
   border-radius: 10px;
   background-color: #fff;
   z-index: -10;
+  opacity: 1;
+  transition: 0.4s;
 }
 .back-img {
   display: inline-block;
@@ -150,6 +152,7 @@ main::before {
   justify-content: center;
   overflow: hidden;
   transform: rotateY(180deg);
+  opacity: 0;
 }
 
 .img-wrapper {
@@ -167,6 +170,16 @@ main::before {
 .card.active,
 .card[data-active="active"] {
   transform: rotateY(180deg);
+}
+
+.card.active .card__front,
+.card[data-active="active"] .card__front {
+  opacity: 1;
+}
+
+.card.active .card__back,
+.card[data-active="active"] .card__back {
+  opacity: 0;
 }
 
 /* Table */

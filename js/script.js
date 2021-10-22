@@ -155,6 +155,7 @@ cards.forEach((card) => {
       // Если у элемента нет класса 'active', то добавляю один ход
       if (card.className.split(" ").indexOf("active") === -1) moves++;
       // Добавляю карточке класс 'active'
+      card.querySelector('.card__front').style.transition = '0.4s';
       card.classList.add("active");
       updateMoves();
       checkWin();
