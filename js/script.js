@@ -1,95 +1,49 @@
 let cards = document.querySelectorAll(".card");
-let imgNames = [
-  "chimp",
-  "deer",
-  "eagle",
-  "fox",
-  "orangutan",
-  "panda",
-  "raccoon",
-  "rhino",
-  "hedgehog",
-  "kangaroo",
-  "lion",
-  "lizard",
-  "monkey",
-  "octopus",
-  "shark",
-  "tiger",
-  "unicorn",
-  "wulf",
-  "zebra",
-  "bird",
-  "buffalo",
-  "butterfly",
-  "cat",
-  "flamingo",
-  "mouse",
-  "parrot",
-  "peacock",
-  "ram",
-  "hare",
-  "owl",
-  "pumbaa",
-];
-
-let imgFacesNames = [
-  "chimp",
-  "deer",
-  // "eagle",
-  "fox",
-  "orangutan",
-  "panda",
-  "raccoon",
-  // "rhino",
-  "hedgehog",
-  // "kangaroo",
-  "lion",
-  "lizard",
-  "monkey",
-  "octopus",
-  "shark",
-  "tiger",
-  "unicorn",
-  "wulf",
-  // "zebra",
-  "bird",
-  "buffalo",
-  "butterfly",
-  "cat",
-  "flamingo",
-  // "mouse",
-  // "parrot",
-  "peacock",
-  "ram",
-  "hare",
-  "owl",
-  "pumbaa",
-];
-
-let colors = [
-  "rgb(255 205 205)",
-  "rgb(255 239 205)",
-  "rgb(255 252 205)",
-  "rgb(214 255 205)",
-  "rgb(205 255 226)",
-  "rgb(205 247 255)",
-  "rgb(205 228 255)",
-  "rgb(209 205 255)",
-  "rgb(239 205 255)",
-  "rgb(255 205 241)",
-];
+// Картинки для карточек
+let imgNames = ["chimp", "deer", "eagle", "fox", "orangutan", "panda", "raccoon", "rhino", "hedgehog", "kangaroo", "lion", "lizard", "monkey", "octopus", "shark", "tiger", "unicorn", "wulf", "zebra", "bird", "buffalo", "butterfly", "cat", "flamingo", "mouse", "parrot", "peacock", "ram", "hare", "owl", "pumbaa",];
+// Картинки для рубашки карточки
+let imgFacesNames = ["chimp", "deer", "fox", "orangutan", "panda", "raccoon", "hedgehog", "lion", "lizard", "monkey", "octopus", "shark", "tiger", "unicorn", "wulf", "bird", "buffalo", "butterfly", "cat", "flamingo", "peacock", "ram", "hare", "owl", "pumbaa",];
+// Цвета для фона картинок животных
+let colors = ["rgb(255 205 205)", "rgb(255 239 205)", "rgb(255 252 205)", "rgb(214 255 205)", "rgb(205 255 226)", "rgb(205 247 255)", "rgb(205 228 255)", "rgb(209 205 255)", "rgb(239 205 255)", "rgb(255 205 241)",];
+// Количество побед
 let wins = 0;
-
+// Количество ходов
 let moves = 0;
 
+
 document.addEventListener("DOMContentLoaded", () => {
-  secundomer(0, 0);
-  loadFrontImg();
+  secundomer();
+  loadShirtImg();
   loadImg();
 });
 
-function loadFrontImg() {
+
+cards.forEach((card) => {
+  card.addEventListener("click", () => {
+    if (document.querySelector(".wrapper").className.split(" ").indexOf("win") !== -1) {
+      document.querySelector(".wrapper").classList.remove("win");
+      // Мешаю картинки и цвета фона под ними
+      loadImg();
+      // Обнуляю ходы
+      moves = 0;
+      cards.forEach((el) => {
+        el.setAttribute("data-active", "");
+      });
+    }
+    if (!card.getAttribute("data-active") && card.className.split(" ").indexOf("active") === -1) {
+      // Если у элемента нет класса 'active', то добавляю один ход
+      moves++;
+      // Добавляю карточке класс 'active'
+      card.querySelector(".card__front").style.transition = "0.4s";
+      card.classList.add("active");
+      updateMoves();
+      checkWin(card);
+    }
+  });
+});
+
+// Загружаем картинку для рубашки карточки
+function loadShirtImg() {
   let imgBackElements = document.querySelectorAll(".back-img");
   imgBackElements.forEach((el) => {
     randomNum = Math.floor(Math.random() * imgBackElements.length);
@@ -136,46 +90,22 @@ function loadImg() {
   });
 }
 
-cards.forEach((card) => {
-  card.addEventListener("click", () => {
-    if (
-      document.querySelector(".wrapper").className.split(" ").indexOf("win") !==
-      -1
-    ) {
-      document.querySelector(".wrapper").classList.remove("win");
-      // Мешаю картинки и цвета фона под ними
-      loadImg();
-      // Обнуляю ходы
-      moves = 0;
-      cards.forEach((el) => {
-        el.setAttribute("data-active", "");
-      });
-    }
-    if (!card.getAttribute("data-active")) {
-      // Если у элемента нет класса 'active', то добавляю один ход
-      if (card.className.split(" ").indexOf("active") === -1) moves++;
-      // Добавляю карточке класс 'active'
-      card.querySelector('.card__front').style.transition = '0.4s';
-      card.classList.add("active");
-      updateMoves();
-      checkWin();
-    }
-  });
-});
+// Список в который будут заносится карточки по которым кликнули
+let arr = [];
 
-function checkWin() {
-  let arr = document.querySelectorAll(".card.active");
-  if (arr.length >= 2) {
-    if (
-      arr[0].querySelector("img").getAttribute("src") ===
-        arr[1].querySelector("img").getAttribute("src") &&
-      arr[0].querySelector(".img-wrapper").style.backgroundColor ===
-        arr[1].querySelector(".img-wrapper").style.backgroundColor
-    ) {
+function checkWin(element) {
+  arr.push(element);
+  // Если длина списка из более чем одного элемента и колличесвто их четное 
+  if (arr.length >= 2 && arr.length%2 == 0) {
+    // Если картинка и цвет фона первого элемента и второго одиннаковы
+    if (arr[0].querySelector("img").getAttribute("src") === arr[1].querySelector("img").getAttribute("src") &&
+      arr[0].querySelector(".img-wrapper").style.backgroundColor === arr[1].querySelector(".img-wrapper").style.backgroundColor) 
+      {
       // Правильный ход
-      for (let i = 0; i < 2; i++) {
+      for (let i = 1; i >= 0; i--) {
         arr[i].dataset.active = "active";
         arr[i].classList.remove("active");
+        arr.splice(i, 1);
       }
       let cardsWin = document.querySelectorAll(".card[data-active = active]");
       if (cardsWin.length === cards.length) {
@@ -183,13 +113,13 @@ function checkWin() {
         wins++;
         updateScore();
         document.querySelector(".wrapper").classList.add("win");
-        console.log("победа");
       }
     } else {
       // Не правильный ход
       setTimeout(() => {
-        for (let i = 0; i < 2; i++) {
+        for (let i = 1; i >= 0; i--) {
           arr[i].classList.remove("active");
+          arr.splice(i, 1);
         }
       }, 1000);
     }
@@ -206,11 +136,11 @@ function updateMoves() {
   movesElement.innerHTML = moves;
 }
 
-function secundomer(curentMinutes, curentSeconds) {
+function secundomer() {
   let minEl = document.querySelector("[data-info = minutes]");
   let secEl = document.querySelector("[data-info = seconds]");
-  let minutes = curentMinutes;
-  let seconds = curentSeconds;
+  let minutes = 0;
+  let seconds = 0;
   setInterval(() => {
     if (seconds === 59) {
       seconds = -1;
