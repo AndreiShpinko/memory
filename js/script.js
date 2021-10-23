@@ -4,7 +4,11 @@ let imgNames = ["chimp", "deer", "eagle", "fox", "orangutan", "panda", "raccoon"
 // Картинки для рубашки карточки
 let imgFacesNames = ["chimp", "deer", "fox", "orangutan", "panda", "raccoon", "hedgehog", "lion", "lizard", "monkey", "octopus", "shark", "tiger", "unicorn", "wulf", "bird", "buffalo", "butterfly", "cat", "flamingo", "peacock", "ram", "hare", "owl", "pumbaa",];
 // Цвета для фона картинок животных
-let colors = ["rgb(255 205 205)", "rgb(255 239 205)", "rgb(255 252 205)", "rgb(214 255 205)", "rgb(205 255 226)", "rgb(205 247 255)", "rgb(205 228 255)", "rgb(209 205 255)", "rgb(239 205 255)", "rgb(255 205 241)",];
+// let colors = ["rgb(255 205 205)", "rgb(255 239 205)", "rgb(255 252 205)", "rgb(214 255 205)", "rgb(205 255 226)", "rgb(205 247 255)", "rgb(205 228 255)", "rgb(209 205 255)", "rgb(239 205 255)", "rgb(255 205 241)",];
+
+let colors = ["rgba(255, 123, 123, 0.7)", "rgba(255, 206, 100, 0.7)", "rgba(151, 255, 128, 0.7)", "rgba(102, 255, 166, 0.7)", "rgba(123, 233, 255, 0.7)", "rgba(83, 80, 255, 0.7)", "rgba(206, 99, 255, 0.7)", "rgba(255, 90, 153, 0.7)",];
+
+
 // Количество побед
 let wins = 0;
 // Количество ходов
@@ -20,24 +24,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
 cards.forEach((card) => {
   card.addEventListener("click", () => {
+    // Если у элемента ".wrapper" есть класс "win"
     if (document.querySelector(".wrapper").className.split(" ").indexOf("win") !== -1) {
       document.querySelector(".wrapper").classList.remove("win");
       // Мешаю картинки и цвета фона под ними
       loadImg();
       // Обнуляю ходы
       moves = 0;
+      // Удаляю значение каждого аттрибута 
       cards.forEach((el) => {
         el.setAttribute("data-active", "");
       });
     }
-    if (!card.getAttribute("data-active") && card.className.split(" ").indexOf("active") === -1) {
-      // Если у элемента нет класса 'active', то добавляю один ход
+    // Если у элемента нет класса 'active' и значение аттрибута "data-active" false, т.е. карточка еще не перевернута
+    else if (!card.getAttribute("data-active") && card.className.split(" ").indexOf("active") === -1) {
       moves++;
       // Добавляю карточке класс 'active'
       card.querySelector(".card__front").style.transition = "0.4s";
       card.classList.add("active");
       updateMoves();
       checkWin(card);
+    }
+    // Если у элемента есть значение аттрибута "data-active" == 'active', т.е. карточка уже перевернута и ей нашли пару
+    else if (card.getAttribute("data-active") == 'active') {
+      // Меняем на 1400 мс цвет фона карточки
+      card.style.boxShadow = '0 4px 6px 1px rgb(255 0 0 / 60%)';
+      setTimeout(() => {
+        card.style.boxShadow = '0 4px 6px 1px rgb(0 0 0 / 40%)';
+      }, 1400);
     }
   });
 });
