@@ -28,7 +28,9 @@ cards.forEach((card) => {
     if (document.querySelector(".wrapper").className.split(" ").indexOf("win") !== -1) {
       document.querySelector(".wrapper").classList.remove("win");
       // Мешаю картинки и цвета фона под ними
-      loadImg();
+      setTimeout(() => {
+        loadImg();
+      }, 400);
       // Обнуляю ходы
       moves = 0;
       // Удаляю значение каждого аттрибута 
