@@ -1,0 +1,139 @@
+main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 100vh;
+  padding: 10px;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: calc(min(80vh, 500px));
+}
+
+.cards-wrapper {
+  padding-top: 100%;
+  position: relative;
+  width: 100%;
+}
+
+.cards {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+
+  border-radius: 15px;
+  padding: 8px;
+  transition: 0.8s;
+}
+
+.card-wrapper {
+  perspective: 1000px;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 3px 4px -4px rgba(0, 0, 0, 0.4);
+  transition: 0.3s;
+
+  transform-style: preserve-3d;
+
+  &[data-status="closed"] {
+    transform: rotateY(0deg);
+  }
+  &[data-status="open"],
+  &[data-status="guessed"] {
+    transform: rotateY(180deg);
+  }
+
+  &.red {
+    box-shadow: 0 3px 4px -4px red;
+    background-color: rgba(255, 0, 0, 0.6);
+  }
+
+  &__front,
+  &__back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    border-radius: 10px;
+    backface-visibility: hidden;
+  }
+
+  &__front {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transform: rotateY(180deg);
+  }
+
+  &__back {
+    background-position: 10px 10px;
+    background-repeat: no-repeat;
+    background-size: 200%;
+    opacity: 0.1;
+  }
+}
+
+.img-wrapper {
+  width: 75%;
+  height: 75%;
+  padding: 11%;
+  border-radius: 100%;
+  background-color: rgb(230, 230, 230);
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.table {
+  font-family: "Poppins", sans-serif;
+  font-size: 22px;
+  display: flex;
+  padding: 10px 4px;
+
+  &__time {
+    margin-left: 40px;
+  }
+
+  &__moves {
+    flex-grow: 1;
+    display: flex;
+    justify-content: end;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .table {
+    font-size: 18px;
+    padding: 6px 2px;
+  }
+
+  .cards {
+    border-radius: 10px;
+    padding: 6px;
+  }
+
+  .card {
+    border-radius: 5px;
+  }
+}

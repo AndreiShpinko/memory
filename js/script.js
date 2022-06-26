@@ -1,157 +1,119 @@
-let cards = document.querySelectorAll(".card");
-// Картинки для карточек
-let imgNames = ["chimp", "deer", "eagle", "fox", "orangutan", "panda", "raccoon", "rhino", "hedgehog", "kangaroo", "lion", "lizard", "monkey", "octopus", "shark", "tiger", "unicorn", "wulf", "zebra", "bird", "buffalo", "butterfly", "cat", "flamingo", "mouse", "parrot", "peacock", "ram", "hare", "owl", "pumbaa",];
-// Картинки для рубашки карточки
-let imgFacesNames = ["chimp", "deer", "fox", "orangutan", "panda", "raccoon", "hedgehog", "lion", "lizard", "monkey", "octopus", "shark", "tiger", "unicorn", "wulf", "bird", "buffalo", "butterfly", "cat", "flamingo", "peacock", "ram", "hare", "owl", "pumbaa",];
-// Цвета для фона картинок животных
-// let colors = ["rgb(255 205 205)", "rgb(255 239 205)", "rgb(255 252 205)", "rgb(214 255 205)", "rgb(205 255 226)", "rgb(205 247 255)", "rgb(205 228 255)", "rgb(209 205 255)", "rgb(239 205 255)", "rgb(255 205 241)",];
+const imgNames = [
+  "chimp",
+  "deer",
+  "eagle",
+  "fox",
+  "orangutan",
+  "panda",
+  "raccoon",
+  "rhino",
+  "hedgehog",
+  "kangaroo",
+  "lion",
+  "lizard",
+  "monkey",
+  "octopus",
+  "shark",
+  "tiger",
+  "unicorn",
+  "wulf",
+  "zebra",
+  "bird",
+  "buffalo",
+  "butterfly",
+  "cat",
+  "flamingo",
+  "mouse",
+  "parrot",
+  "peacock",
+  "ram",
+  "hare",
+  "owl",
+  "pumbaa",
+];
 
-let colors = ["rgba(255, 123, 123, 0.7)", "rgba(255, 206, 100, 0.7)", "rgba(151, 255, 128, 0.7)", "rgba(102, 255, 166, 0.7)", "rgba(123, 233, 255, 0.7)", "rgba(83, 80, 255, 0.7)", "rgba(206, 99, 255, 0.7)", "rgba(255, 90, 153, 0.7)",];
+const colors = [
+  "rgb(255 205 205)",
+  "rgb(255 239 205)",
+  "rgb(255 252 205)",
+  "rgb(214 255 205)",
+  "rgb(205 255 226)",
+  "rgb(205 247 255)",
+  "rgb(205 228 255)",
+  "rgb(209 205 255)",
+  "rgb(239 205 255)",
+  "rgb(255 205 218)",
+];
 
+const winsCounter = document.querySelector("[data-info = wins]");
+const movesCounter = document.querySelector("[data-info = moves]");
 
-// Количество побед
-let wins = 0;
-// Количество ходов
-let moves = 0;
+function getRandom(till) {
+  return Math.floor(Math.random() * till);
+}
 
+// set random color on .cards
+function setRanWrapColor() {
+  document.querySelector(".cards").style.backgroundColor =
+    colors[getRandom(colors.length)];
+}
 
-document.addEventListener("DOMContentLoaded", () => {
-  secundomer();
-  loadShirtImg();
-  loadImg();
-});
-
-
-cards.forEach((card) => {
-  card.addEventListener("click", () => {
-    // Если у элемента ".wrapper" есть класс "win"
-    if (document.querySelector(".wrapper").className.split(" ").indexOf("win") !== -1) {
-      document.querySelector(".wrapper").classList.remove("win");
-      // Мешаю картинки и цвета фона под ними
-      setTimeout(() => {
-        loadImg();
-      }, 400);
-      // Обнуляю ходы
-      moves = 0;
-      // Удаляю значение каждого аттрибута 
-      cards.forEach((el) => {
-        el.setAttribute("data-active", "");
-      });
-    }
-    // Если у элемента нет класса 'active' и значение аттрибута "data-active" false, т.е. карточка еще не перевернута
-    else if (!card.getAttribute("data-active") && card.className.split(" ").indexOf("active") === -1) {
-      moves++;
-      // Добавляю карточке класс 'active'
-      card.querySelector(".card__front").style.transition = "0.4s";
-      card.classList.add("active");
-      updateMoves();
-      checkWin(card);
-    }
-    // Если у элемента есть значение аттрибута "data-active" == 'active', т.е. карточка уже перевернута и ей нашли пару
-    else if (card.getAttribute("data-active") == 'active') {
-      // Меняем на 1400 мс цвет фона карточки
-      card.style.boxShadow = '0 4px 6px 1px rgb(255 0 0 / 60%)';
-      setTimeout(() => {
-        card.style.boxShadow = '0 4px 6px 1px rgb(0 0 0 / 40%)';
-      }, 1400);
-    }
+// set game again after win
+function setGameAgain() {
+  guessedCardsAmount = 0;
+  document.querySelectorAll(".card").forEach((el) => {
+    el.dataset.status = "closed";
   });
-});
 
-// Загружаем картинку для рубашки карточки
-function loadShirtImg() {
-  let imgBackElements = document.querySelectorAll(".back-img");
+  setTimeout(() => loadImg(), 400);
+}
+
+// load all imgs on card backs, i used it only on start
+function loadBackImgs() {
+  const imgBackElements = document.querySelectorAll(".card__back");
+
   imgBackElements.forEach((el) => {
-    randomNum = Math.floor(Math.random() * imgBackElements.length);
-    el.style.backgroundImage = `url(img/${imgFacesNames[randomNum]}.png)`;
+    el.style.backgroundImage = `url(img/${
+      imgNames[getRandom(imgBackElements.length)]
+    }.png)`;
   });
 }
 
-// Загружаем по две одиннаковые картинки
+// load all imgs and colors on card front sides
 function loadImg() {
-  // Выбираем все картинки
+  let randomArr = [];
+  for (let i = 0; i < 16; i++) randomArr.push(i);
+  randomArr = randomArr.sort(() => Math.random() - 0.5);
+
   let imgElements = document.querySelectorAll(".card img");
-  let imgWrapper = document.querySelectorAll(".card .img-wrapper");
-  // Создаем список из рандомно выбранных чисел от 0 до ПОЛОВИНЫ длины списка imgNames и заполняем его
-  let arrNumImg = [];
-  let arrNumCol = [];
-  for (let i = 0; i < imgElements.length / 2; i++) {
-    let randomNumImg = Math.floor(Math.random() * imgNames.length);
-    let randomNumColors = Math.floor(Math.random() * colors.length);
-    arrNumImg[i] = randomNumImg;
-    arrNumCol[i] = randomNumColors;
-  }
-  // Удавиваем этот список
-  // Сейчас в этом списке нужное количество рандомно выбранных в правильном диапозоне чисел с парами, но его левая половина равна правой
-  arrNumImg = [...arrNumImg, ...arrNumImg];
-  arrNumCol = [...arrNumCol, ...arrNumCol];
+  let imgWrappers = document.querySelectorAll(".card .img-wrapper");
 
-  // Перемешиваем левую и правую часть списка
-  let arrImg = [];
-  let arrCol = [];
-  for (let i = 0; i < imgElements.length; i++) {
-    let randomNum = Math.floor(Math.random() * arrNumImg.length);
-    arrImg[i] = arrNumImg[randomNum];
-    arrCol[i] = arrNumCol[randomNum];
-    arrNumImg.splice(randomNum, 1);
-    arrNumCol.splice(randomNum, 1);
-  }
-  // Вставляем каринки по этому списку
-  imgElements.forEach((el, i) => {
-    el.setAttribute("src", `img/${imgNames[arrImg[i]]}.png`);
-  });
-  // Вставляем цвета на фон
-  imgWrapper.forEach((el, i) => {
-    el.style.backgroundColor = colors[arrCol[i]];
-  });
-}
+  for (let i = 0; i < imgElements.length; i += 2) {
+    const randomImgName = imgNames[getRandom(imgNames.length)];
+    const randomColor = colors[getRandom(colors.length)];
 
-// Список в который будут заносится карточки по которым кликнули
-let arr = [];
+    imgElements[randomArr[i]].src = `./img/${randomImgName}.png`;
+    imgElements[randomArr[i + 1]].src = `./img/${randomImgName}.png`;
 
-function checkWin(element) {
-  arr.push(element);
-  // Если длина списка из более чем одного элемента и колличесвто их четное 
-  if (arr.length >= 2 && arr.length%2 == 0) {
-    // Если картинка и цвет фона первого элемента и второго одиннаковы
-    if (arr[0].querySelector("img").getAttribute("src") === arr[1].querySelector("img").getAttribute("src") &&
-      arr[0].querySelector(".img-wrapper").style.backgroundColor === arr[1].querySelector(".img-wrapper").style.backgroundColor) 
-      {
-      // Правильный ход
-      for (let i = 1; i >= 0; i--) {
-        arr[i].dataset.active = "active";
-        arr[i].classList.remove("active");
-        arr.splice(i, 1);
-      }
-      let cardsWin = document.querySelectorAll(".card[data-active = active]");
-      if (cardsWin.length === cards.length) {
-        // Победа
-        wins++;
-        updateScore();
-        document.querySelector(".wrapper").classList.add("win");
-      }
-    } else {
-      // Не правильный ход
-      setTimeout(() => {
-        for (let i = 1; i >= 0; i--) {
-          arr[i].classList.remove("active");
-          arr.splice(i, 1);
-        }
-      }, 1000);
-    }
+    imgWrappers[randomArr[i]].style.backgroundColor = randomColor;
+    imgWrappers[randomArr[i + 1]].style.backgroundColor = randomColor;
   }
 }
 
-function updateScore() {
-  let winElement = document.querySelector("[data-info = wins]");
-  winElement.innerHTML = wins;
+// check cards are equally or not
+function checkCardEqually(el1, el2) {
+  if (
+    el1.querySelector("img").getAttribute("src") ===
+      el2.querySelector("img").getAttribute("src") &&
+    el1.querySelector(".img-wrapper").style.backgroundColor ===
+      el2.querySelector(".img-wrapper").style.backgroundColor
+  ) {
+    return true;
+  }
+  return false;
 }
 
-function updateMoves() {
-  let movesElement = document.querySelector("[data-info = moves]");
-  movesElement.innerHTML = moves;
-}
-
+// start secundomer
 function secundomer() {
   let minEl = document.querySelector("[data-info = minutes]");
   let secEl = document.querySelector("[data-info = seconds]");
@@ -167,3 +129,49 @@ function secundomer() {
     secEl.innerHTML = seconds < 10 ? "0" + seconds : seconds;
   }, 1000);
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  secundomer();
+  loadBackImgs();
+  loadImg();
+  setRanWrapColor();
+});
+
+let clickedCards = [];
+let guessedCardsAmount = 0;
+
+document.querySelector(".cards").addEventListener("click", (e) => {
+  const card = e.target.closest(".card");
+  if (!card) return false;
+
+  if (guessedCardsAmount === 16) {
+    setGameAgain();
+    winsCounter.innerHTML = +winsCounter.innerHTML + 1;
+  } else if (card.dataset.status === "closed") {
+    card.dataset.status = "open";
+    clickedCards.push(card);
+
+    if (clickedCards.length === 2) {
+      movesCounter.innerHTML = +movesCounter.innerHTML + 1;
+      setRanWrapColor();
+      if (checkCardEqually(...clickedCards)) {
+        clickedCards[0].dataset.status = "guessed";
+        clickedCards[1].dataset.status = "guessed";
+        guessedCardsAmount += 2;
+      } else {
+        const clickedCardsCopy = [...clickedCards];
+        setTimeout(() => {
+          clickedCardsCopy[0].dataset.status = "closed";
+          clickedCardsCopy[1].dataset.status = "closed";
+        }, 1000);
+      }
+
+      clickedCards.length = 0;
+    }
+  } else {
+    card.classList.add("red");
+    setTimeout(() => {
+      card.classList.remove("red");
+    }, 1500);
+  }
+});
